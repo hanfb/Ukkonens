@@ -10,6 +10,12 @@ class Node():
     
     def new_edge(self, edge):
         self.edges.append(edge)
+    
+    def is_leaf(self):
+        if len(self.edges) == 0:
+            return True
+        else:
+            return False
 
 class Edge():
     def __init__(self, s, d, n_start, n_end):
@@ -119,11 +125,13 @@ class Ukkonens():
                 s += edge_len
                 cnt += edge_len
                 # set active node to new node
-                self.an = edge.dest
+                if edge.dest is not None:
+                    self.an = edge.dest
                 edge = self.find_edge(s, edge.dest)
                 if edge.source is not None: edge_len = edge.end[0]-edge.start+1
-            # if edge length is enough then skip count
-            if edge.source is not None and edge_len >= skip_dist+s:
+            # if edge length is enough then skip count 
+            # and edge_len >= skip_dist+s
+            if edge.source is not None:
                 # increment start pointer and counter by amount of length just skipped
                 s += skip_dist
                 cnt += skip_dist
@@ -201,9 +209,17 @@ class Ukkonens():
     def find_edge(self, s, node):
         w = self.word
         r = Edge(None, None, None, None)
+        if node is None:
+            return r
         for i in range(node.get_len()):
             edge = node.get_edge(i)
-            if w[edge.start] == w[s] and (edge.start > -1 or s == -1):
+            # for finding suffix links
+            if s == -1:
+                if edge.start == -1:
+                    r = edge
+                    break
+            # for finding normal edges
+            elif w[edge.start] == w[s] and edge.start > -1:
                 r = edge
                 break
         return r
@@ -212,9 +228,12 @@ class Ukkonens():
         edges = self.edges
         for i in edges:
             print("start val: ", i.start, "end val: ", i.end[0])
-    
+
+def ukkonens(wrd):
+    return Ukkonens(wrd)
+
 def main():
-    wrd = "abacabad"
+    wrd = "mississippi$"
     tree = Ukkonens(wrd)
     tree.disp_edges()
 
