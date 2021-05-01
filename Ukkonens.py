@@ -1,6 +1,7 @@
 class Node():
     def __init__(self):
         self.edges = []
+        self.suffixind = -1 # used for calculating suffix array
 
     def get_len(self):
         return len(self.edges)
@@ -31,6 +32,7 @@ class Edge():
 class Ukkonens():
     def __init__(self, wrd):
         self.word = wrd
+        self.size = 0
         self.root = Node()
         self.edges = []
         self.lastj = -1
@@ -181,7 +183,10 @@ class Ukkonens():
                     n_e2 = Edge(n_node, edge.dest, n, edge.end)
                     self.edges.append(n_e2)
                     n_node.new_edge(n_e2)
-                n_e3 = Edge(n_node, Node(), last_ind, self.globalEnd)
+                n_node2 = Node()
+                n_node2.suffixind = s
+                self.size += 1
+                n_e3 = Edge(n_node, n_node2, last_ind, self.globalEnd)
                 self.edges.append(n_e3)
                 n_node.new_edge(n_e3)
                 self.lastn = n_node
@@ -198,6 +203,8 @@ class Ukkonens():
             self.n_sfxLink = True
             self.lastj = s
             n_node = Node()
+            n_node.suffixind = s
+            self.size += 1
             if self.an != self.root:
                 # increment start pointer by length skipped during skip counting
                 s += self.remainder[1] - self.remainder[0] + 1
@@ -228,6 +235,10 @@ class Ukkonens():
         edges = self.edges
         for i in edges:
             print("start val: ", i.start, "end val: ", i.end[0])
+    
+    def takeInd(self, edge):
+        w = self.word
+        return w[edge.start]
 
 def ukkonens(wrd):
     return Ukkonens(wrd)
